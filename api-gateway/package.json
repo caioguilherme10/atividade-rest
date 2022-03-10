@@ -1,0 +1,18 @@
+{
+  "name": "api-gateway",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon ./index.js"
+  },
+  "author": "caio",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.3",
+    "express-http-proxy": "^1.6.3",
+    "googleapis": "^96.0.0",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.15"
+  }
+}
