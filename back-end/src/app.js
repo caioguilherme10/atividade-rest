@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const app = express();
 
 const Comments = require("./comments");
-const User = require("/.user");
+const User = require("./user");
 
 app.use(express.json());
 
@@ -102,7 +102,7 @@ app.post("/login", async (req, res) => {
 });
 
 //registrar comentario no livro
-app.post("/registerCom", async (req, res) => {
+app.post("/registercom", checkToken, async (req, res) => {
     const { iduser, book , comment } = req.body;
 
     // check if user exists
@@ -137,9 +137,24 @@ app.post("/registerCom", async (req, res) => {
     }
 });
 
-//excluir comentario
-
 //list
+app.get("/comments/:id", checkToken, async (req,res) => {
+    const id = req.params.id;
+    const comment = await Comments.findOne({ book: id });
+    console.log(comment);
+    res.status(200).json({ comment: comment });
+});
+
+//excluir comentario
+app.delete("comment/:id", checkToken, async (req,res) => {
+    const id = req.params.id;
+    try {
+        await Comments.deleteOne({ _id: id });
+        res.status(200).json({ msg: "Excluido com Sucesso!" });
+    } catch (err) {
+        res.status(500).json({ msg: error });
+    }
+});
 
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASS;
