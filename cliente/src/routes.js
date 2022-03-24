@@ -1,6 +1,6 @@
 import React from 'react';
 import { isAuthenticated } from "./services/auth";
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 
 import Login from './pages/Login/index';
 import CadastroUsuario from './pages/CadastroUsuario/index';
@@ -9,42 +9,43 @@ import Book from './pages/Book/index';
 import CadastroBook from './pages/CadastroBook/index';
 import NotFound from './pages/NotFound/index';
 
-const AuthenticatedRoute = ({ component: Component, ...rest }) => (
-  <Route
-    {...rest}
-    render={props =>
-      isAuthenticated() ? (
-        <Component {...props} />
-      ) : (
-          <Redirect to={{ pathname: "/auth/login", state: { from: props.location } }} />
-        )
-    }
-  />
-);
+function RequireAuth({ children, redirectTo }) {
+  return isAuthenticated() ? children : <Navigate to={redirectTo} />;
+}
 
-const Routes = () => {
+const Rotas = () => {
   return (
-    <BrowserRouter>
-      <Switch>
-        <Route exact path="/auth/login" component={Login} />
+    <Routes>
+      <Route path="/auth/login" element={<Login />} />
 
-        <Route exact path="/cadastro" component={CadastroUsuario} />
+      <Route path="/cadastro" element={<CadastroUsuario />} />
 
-        {/* Manager routes. */}
-        <AuthenticatedRoute exact path="/principal" component={Principal} />
+      {/* Manager routes. */}
+      <Route path="/principal" element={
+        <RequireAuth redirectTo="/auth/login">
+          <Principal />
+        </RequireAuth>
+      } />
 
-        {/* Cadastro Mototaxista routes. */}
-        <AuthenticatedRoute exact path="/book" component={Book} />
+      {/* Cadastro Mototaxista routes. */}
+      <Route path="/book" element={
+        <RequireAuth redirectTo="/auth/login">
+          <Book />
+        </RequireAuth>
+      } />
 
-        {/* Cadastro Supervisor routes. */}
-        <AuthenticatedRoute exact path="/cadastro-book" component={CadastroBook} />
+      {/* Cadastro Supervisor routes. */}
+      <Route path="/cadastro-book" element={
+        <RequireAuth redirectTo="/auth/login">
+          <CadastroBook />
+        </RequireAuth>
+      } />
 
-        {/* Default route */}
-        <Route component={NotFound} />
+      {/* Default route */}
+      <Route path="*" element={<NotFound />} />
 
-      </Switch>
-    </BrowserRouter>
+    </Routes>
   );
 };
 
-export default Routes;
+export default Rotas;

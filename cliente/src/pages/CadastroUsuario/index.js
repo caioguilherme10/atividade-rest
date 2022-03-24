@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import axios from "axios";
 
@@ -11,6 +11,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
+import colors from '../../styles/global';
 
 const { innerWidth: width, innerHeight: height } = window;
 
@@ -28,7 +29,7 @@ const useStyles = makeStyles({
     },
     title: {
         fontSize: 22,
-        color: '#785e26'
+        color: colors.teal800
     },
     pos: {
         marginBottom: 12,
@@ -77,20 +78,20 @@ const CssTextField = withStyles({
     root: {
         marginTop: 5,
         '& label.Mui-focused': {
-            color: '#785e26',
+            color: colors.tealA700,
         },
         '& .MuiInput-underline:after': {
-            borderBottomColor: '#785e26',
+            borderBottomColor: colors.tealA700,
         },
         '& .MuiOutlinedInput-root': {
             '& fieldset': {
                 borderColor: 'red',
             },
             '&:hover fieldset': {
-                borderColor: '#785e26',
+                borderColor: colors.tealA700,
             },
             '&.Mui-focused fieldset': {
-                borderColor: '#785e26'
+                borderColor: colors.tealA700
             },
         },
     },
@@ -100,9 +101,9 @@ const ButtonStyles = withStyles({
     root: {
         width: "200px",
         color: "#FFF",
-        backgroundColor: '#785e26',
+        backgroundColor: colors.teal800,
         '&:hover': {
-            backgroundColor: '#785e26'
+            backgroundColor: colors.tealA700
         },
     },
 })(Button);
@@ -110,14 +111,14 @@ const ButtonStyles = withStyles({
 const Cadastro = (props) => {
     const classes = useStyles();
 
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const [nameC, setNameC] = useState("");
     const [passwordC, setPasswordC] = useState("");
 
     const Salvar = () => {
         axios
-            .post(`http://localhost:10000/register`, {
+            .post(`http://localhost:10000/api/register`, {
                 name: nameC,
                 password: passwordC,
             },{
@@ -128,7 +129,7 @@ const Cadastro = (props) => {
             })
             .then((response) => {
                 console.log(response.data);
-                history.push("/login");
+                navigate("/auth/login");
             })
             .catch((error) => {
                 console.log(error.response.data)
@@ -176,7 +177,7 @@ const Cadastro = (props) => {
                         <ButtonStyles 
                             variant="contained" 
                             onClick={() => {
-                                history.push("/login");
+                                navigate("/auth/login");
                             }}
                         >
                             Login

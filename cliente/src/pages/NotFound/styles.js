@@ -19,7 +19,7 @@ export  const useStyles = makeStyles(theme => ({
     },
     title: {
         fontSize: 40,
-        color: colors.primaryOrange,
+        color: colors.teal800,
     },
     divBreak: {
         flexBasis: "100%",
@@ -32,9 +32,9 @@ export const ButtonStyles = withStyles({
     root: {
         width: "200px",
         color: "#FFF",
-        backgroundColor: colors.primaryOrange,
+        backgroundColor: colors.teal800,
         '&:hover': {
-            backgroundColor: colors.primaryOrangeHover
+            backgroundColor: colors.tealA700
         },
     },
 })(Button);

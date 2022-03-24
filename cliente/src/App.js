@@ -1,6 +1,12 @@
 import React from 'react';
-import Routes from './routes';
+import Rotas from './routes';
 
-const App = () => <Routes/>;
+const App = () => {
+    return (
+        <Rotas/>
+    )
+};
+
+//<Rotas/>
 
 export default App;

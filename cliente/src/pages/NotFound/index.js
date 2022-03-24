@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // Internal Styles.
 import { useStyles, ButtonStyles } from "./styles";
@@ -7,10 +7,10 @@ import { useStyles, ButtonStyles } from "./styles";
 const NotFound = () => {
     const classes = useStyles();
 
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const voltar = () => {
-        history.push("/");
+        navigate("/auth/login");
     }
     return ( 
         <div className={classes.root}>

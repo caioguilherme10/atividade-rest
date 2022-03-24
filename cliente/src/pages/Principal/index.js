@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 
-import { useHistory, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-import axios from "axios";
+//import axios from "axios";
 
-import { makeStyles , withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
-import TextField from '@material-ui/core/TextField';
+//import TextField from '@material-ui/core/TextField';
 
 const { innerWidth: width, innerHeight: height } = window;
 
@@ -124,7 +123,7 @@ const styles = {
     },
 };
 
-const CssTextField = withStyles({
+/*const CssTextField = withStyles({
     root: {
         marginTop: 5,
         '& label.Mui-focused': {
@@ -145,7 +144,7 @@ const CssTextField = withStyles({
             },
         },
     },
-})(TextField);
+})(TextField);*/
 
 const ButtonStyles = withStyles({
     root: {
@@ -199,7 +198,7 @@ class Principal extends Component {
                         onClick={this.routeChange}
                         component={Link}
 					    to={{
-							pathname: "/login",
+							pathname: "/auth/login",
 						}}
                     >
                         Sair

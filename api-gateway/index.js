@@ -6,6 +6,8 @@ const url = require('url');
 const httpProxy = require('express-http-proxy');
 const express = require('express');
 const app = express();
+var router = express.Router()
+var bodyParser = require('body-parser');
 var logger = require('morgan');
 
 const {google} = require('googleapis');
@@ -26,7 +28,19 @@ google.options({auth: oauth2Client});
  
 app.use(logger('dev'));
 
-const userServiceProxy = httpProxy('http://localhost:3000/');
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }));
+
+const apiAdapter = require('./apiAdapter')
+
+const BASE_URL = 'http://localhost:3000'
+const api = apiAdapter(BASE_URL)
+
+//const userServiceProxy1 = httpProxy('http://localhost:3000/register');
+//const userServiceProxy2 = httpProxy('http://localhost:3000/login');
+//const userServiceProxy3 = httpProxy('http://localhost:3000/registercom');
+//const userServiceProxy4 = httpProxy('http://localhost:3000/comments/:id');
+
 
 async function authenticate(req) {
     console.log(req.url);
@@ -35,11 +49,23 @@ async function authenticate(req) {
     oauth2Client.credentials = tokens;
 }
 
+function selectProxyHost(req) {
+    if (req.path.startsWith('/api/register'))
+        return 'http://localhost:3000/register';
+    else if (req.path.startsWith('/api/login'))
+        return 'http://localhost:3000/login';
+    else if (req.path.startsWith('/registercom'))
+        return 'http://localhost:3000/registercom';
+    else if (req.path.startsWith('/comments/:id'))
+        return 'http://localhost:3000/comments/:id';
+    
+}
+
 app.use((req, res, next) => {
     // TODO: my authentication logic
     //authenticate(req);
-
-    next()
+    httpProxy(selectProxyHost(req))(req, res, next);
+    //next()
 });
 
 app.post('/oauth2callback', async (req,res) => {
@@ -53,30 +79,34 @@ app.post('/oauth2callback', async (req,res) => {
     //}
 });
 
-// Proxy request
-app.post('/register', (req, res, next) => {
-    userServiceProxy(req, res, next)
+/* Proxy request
+router.post('/register', (req, res) => {
+    //userServiceProxy1(req, res, next)
+    api.post('/register').then(resp => {
+        res.send(resp.data)
+    })
 });
 
 // Proxy request
 app.post('/login', (req, res, next) => {
-    userServiceProxy(req, res, next)
+    userServiceProxy2(req, res, next)
 });
 
 // Proxy request
 app.post('/registercom', (req, res, next) => {
-    userServiceProxy(req, res, next)
+    userServiceProxy3(req, res, next)
 });
 
 // Proxy request
 app.get('/comments/:id', (req, res, next) => {
-    userServiceProxy(req, res, next)
+    userServiceProxy4(req, res, next)
 });
 
 // Proxy request
 app.delete('comment/:id', (req, res, next) => {
-    userServiceProxy(req, res, next)
+    userServiceProxy4(req, res, next)
 });
+*/
 
 //api google books
 app.get('/books', (req,res) => {
