@@ -130,8 +130,8 @@ const Login = (props) => {
             .then((response) => {
                 console.log(response.data);
                 localStorage.setItem("@token", response.data.token);
-                //localStorage.setItem("userId", response.data.user._id);
-                //localStorage.setItem("userName", response.data.user.name);
+                localStorage.setItem("userId", response.data.user._id);
+                localStorage.setItem("userName", response.data.user.name);
                 navigate("/principal");
             })
             .catch((error) => {

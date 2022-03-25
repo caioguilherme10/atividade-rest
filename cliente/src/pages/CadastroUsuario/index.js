@@ -116,17 +116,28 @@ const Cadastro = (props) => {
     const [nameC, setNameC] = useState("");
     const [passwordC, setPasswordC] = useState("");
 
+    const instance = axios.create({
+        baseURL: 'http://localhost:10000',
+        //timeout: 1000,
+        headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS"
+        }
+    });
+
     const Salvar = () => {
-        axios
-            .post(`http://localhost:10000/api/register`, {
+        instance.post('/register', {
                 name: nameC,
                 password: passwordC,
-            },{
+            }
+            /*,{
                 headers: {
                     "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS"
                 },
-            })
+            }*/
+            )
             .then((response) => {
                 console.log(response.data);
                 navigate("/auth/login");

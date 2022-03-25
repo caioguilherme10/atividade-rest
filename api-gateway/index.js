@@ -1,73 +1,85 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-const url = require('url');
+//const fs = require('fs');
+//const path = require('path');
+//const url = require('url');
 const httpProxy = require('express-http-proxy');
 const express = require('express');
+const cors = require('cors');
 const app = express();
-var router = express.Router()
-var bodyParser = require('body-parser');
+//var router = express.Router();
+//var bodyParser = require('body-parser');
 var logger = require('morgan');
 
-const {google} = require('googleapis');
-
+//const {google} = require('googleapis');
+/*
 const keyPath = path.join(__dirname, 'oauth2.keys.json');
 let keys = {redirect_uris: ['']};
 if (fs.existsSync(keyPath)) {
   keys = require(keyPath).web;
 }
-
+*/
+/*
 const oauth2Client = new google.auth.OAuth2(
     keys.client_id,
     keys.client_secret,
     keys.redirect_uris[0]
 );
-
-google.options({auth: oauth2Client});
+*/
+//google.options({auth: oauth2Client});
  
 app.use(logger('dev'));
+app.use(cors({
+    "origin": "*",
+    "methods": "GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS",
+    "preflightContinue": false,
+    "optionsSuccessStatus": 200
+}));
 
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }));
+//app.use(bodyParser.json())
+//app.use(bodyParser.urlencoded({ extended: true }));
 
-const apiAdapter = require('./apiAdapter')
+//const apiAdapter = require('./apiAdapter')
 
-const BASE_URL = 'http://localhost:3000'
-const api = apiAdapter(BASE_URL)
+//const BASE_URL = 'http://localhost:4000'
+//const api = apiAdapter(BASE_URL)
 
-//const userServiceProxy1 = httpProxy('http://localhost:3000/register');
-//const userServiceProxy2 = httpProxy('http://localhost:3000/login');
-//const userServiceProxy3 = httpProxy('http://localhost:3000/registercom');
-//const userServiceProxy4 = httpProxy('http://localhost:3000/comments/:id');
+const userServiceProxy1 = httpProxy('http://localhost:4000/register');
+const userServiceProxy2 = httpProxy('http://localhost:4000/login');
+const userServiceProxy3 = httpProxy('http://localhost:4000/registercom');
+const userServiceProxy4 = httpProxy('http://localhost:4000/comments/:id');
 
-
+/*
 async function authenticate(req) {
     console.log(req.url);
     const qs = new url.URL(req.url, 'http://localhost:10000').searchParams;
     const {tokens} = await oauth2Client.getToken({ code });
     oauth2Client.credentials = tokens;
 }
-
+*/
+/* funciona 1
 function selectProxyHost(req) {
     if (req.path.startsWith('/api/register'))
-        return 'http://localhost:3000/register';
+        return 'http://localhost:4000/register';
     else if (req.path.startsWith('/api/login'))
-        return 'http://localhost:3000/login';
+        return 'http://localhost:4000/login';
     else if (req.path.startsWith('/registercom'))
-        return 'http://localhost:3000/registercom';
+        return 'http://localhost:4000/registercom';
     else if (req.path.startsWith('/comments/:id'))
-        return 'http://localhost:3000/comments/:id';
+        return 'http://localhost:4000/comments/:id';
     
 }
+*/
 
 app.use((req, res, next) => {
     // TODO: my authentication logic
     //authenticate(req);
-    httpProxy(selectProxyHost(req))(req, res, next);
-    //next()
+    //funciona 1
+    //httpProxy(selectProxyHost(req))(req, res, next);
+    next()
 });
 
+/*
 app.post('/oauth2callback', async (req,res) => {
     //try {
         const qs = new url.URL(req.url, 'http://localhost:10000').searchParams;
@@ -85,6 +97,11 @@ router.post('/register', (req, res) => {
     api.post('/register').then(resp => {
         res.send(resp.data)
     })
+});
+*/
+// Proxy request
+app.post('/register', (req, res, next) => {
+    userServiceProxy1(req, res, next)
 });
 
 // Proxy request
@@ -106,8 +123,8 @@ app.get('/comments/:id', (req, res, next) => {
 app.delete('comment/:id', (req, res, next) => {
     userServiceProxy4(req, res, next)
 });
-*/
 
+/*
 //api google books
 app.get('/books', (req,res) => {
     const params = req.url.toString().slice(9);
@@ -143,6 +160,7 @@ app.get('/book', (req,res) => {
         return res.status(200).json({ msg: response.data });
     })
 });
+*/
 
 /*
 function selectProxyHost(req,res) {

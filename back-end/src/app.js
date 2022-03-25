@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
+const cors = require('cors');
 
 const app = express();
 
@@ -9,6 +10,12 @@ const Comments = require("./comments");
 const User = require("./user");
 
 app.use(express.json());
+app.use(cors({
+    "origin": "*",
+    "methods": "GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS",
+    "preflightContinue": false,
+    "optionsSuccessStatus": 200
+}));
 
 function checkToken(req, res, next) {
     const authHeader = req.headers["authorization"];
@@ -95,7 +102,7 @@ app.post("/login", async (req, res) => {
             secret
         );
   
-        res.status(200).json({ msg: "Autenticação realizada com sucesso!", token });
+        res.status(200).json({ msg: "Autenticação realizada com sucesso!", token , user });
     } catch (error) {
         res.status(500).json({ msg: error });
     }
@@ -163,5 +170,5 @@ mongoose.connect(
     `mongodb+srv://${dbUser}:${dbPassword}@cluster0.m7e5h.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
 ).then(() => {
     console.log("Conectou ao banco!");
-    app.listen(3000);
+    app.listen(4000);
 }).catch((err) => console.log(err));

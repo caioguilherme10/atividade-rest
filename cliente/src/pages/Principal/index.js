@@ -8,6 +8,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 //import TextField from '@material-ui/core/TextField';
+import colors from '../../styles/global';
 
 const { innerWidth: width, innerHeight: height } = window;
 
@@ -25,7 +26,7 @@ const styles = {
         flexDirection:"row",
         justifyContent: "space-around",
         alignItems: "center",
-        backgroundColor: "#785e26"
+        backgroundColor: colors.teal800
     },
     title: {
         fontSize: 22,
@@ -150,9 +151,9 @@ const ButtonStyles = withStyles({
     root: {
         width: "200px",
         color: "#FFF",
-        backgroundColor: '#785e26',
+        backgroundColor: colors.teal800,
         '&:hover': {
-            backgroundColor: '#785e26'
+            backgroundColor: colors.tealA700
         },
     },
 })(Button);
@@ -177,7 +178,7 @@ class Principal extends Component {
     async componentDidMount() {
 
         this.setState({ userName: localStorage.getItem("userName") });
-        //this.setState({ userId: localStorage.getItem("userId") });
+        this.setState({ userId: localStorage.getItem("userId") });
 
     }
 
