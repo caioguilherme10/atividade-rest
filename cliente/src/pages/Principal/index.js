@@ -7,8 +7,16 @@ import { Link } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import Pagination from '@material-ui/lab/Pagination';
 //import TextField from '@material-ui/core/TextField';
 import colors from '../../styles/global';
+
+import livros from './const';
 
 const { innerWidth: width, innerHeight: height } = window;
 
@@ -46,29 +54,39 @@ const styles = {
         //justifyContent: "center",
         //alignItems: "center",
     },
-    usersList: {
-        position: "static",
-        overflow: "scroll",
-    },
     paper: {
         marginTop: height - height * 0.99,
-        height: height - height * 0.95,
-        width: width - width * 0.52,
-        backgroundColor: "#785e26",
+        //marginBottom: height - height * 0.88,
+        marginLeft: width - width * 0.99,
+        marginRight: width - width * 0.99,
+        height: height - height * 0.30,
+        width: width,
+        backgroundColor: "#b2dfdb",
         display: "flex",
         flexDirection:"column",
         justifyContent: "center",
         alignItems: "center",
     },
+    list: {
+        width: width - width * 0.11,
+    },
+    listitem: {
+        border: "2px solid #004d40",
+        borderRadius: "5px",
+        marginTop: height - height * 0.99,
+        marginBottom: height - height * 0.99,
+        padding: "5px 5px 5px 5px",
+    },
+    divpagination: {
+        margin: "2%",
+        width: "100%",
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+    },
     usersName: {
         fontSize: 18,
         color: 'white'
-    },
-    contentChat: {
-        height: height - height * 0.2,
-        width: width - width * 0.52,
-        display: "flex",
-        flexDirection:"column",
     },
     divTitle: {
         marginTop: height - height * 0.99,
@@ -85,67 +103,7 @@ const styles = {
         flexDirection:"row",
         alignItems: "center",
     },
-    userMensagem: {
-        width: width - width * 0.68,
-        marginRight: width - width * 0.99,
-    },
-    mensagemName: {
-        fontSize: 14,
-        color: 'white',
-    },
-    divMensagemR: {
-        display: "flex",
-        flexDirection:"row",
-        justifyContent: "flex-end",
-        alignItems: "center",
-        margin: width - width * 0.995,
-    },
-    divMensagemRR: {
-        borderRadius: width - width * 0.99,
-        backgroundColor: "#785e26",
-        padding: width - width * 0.995,
-    },
-    divMensagemL: {
-        display: "flex",
-        flexDirection:"row",
-        justifyContent: "flex-start",
-        alignItems: "center",
-        margin: width - width * 0.995,
-    },
-    divMensagemLL: {
-        borderRadius: width - width * 0.99,
-        backgroundColor: "#785e26",
-        padding: width - width * 0.995,
-    },
-    divLisMensagens: {
-        width: "100%",
-        height: "100%",
-        overflow: "auto",
-    },
 };
-
-/*const CssTextField = withStyles({
-    root: {
-        marginTop: 5,
-        '& label.Mui-focused': {
-            color: '#785e26',
-        },
-        '& .MuiInput-underline:after': {
-            borderBottomColor: '#785e26',
-        },
-        '& .MuiOutlinedInput-root': {
-            '& fieldset': {
-                borderColor: 'red',
-            },
-            '&:hover fieldset': {
-                borderColor: '#785e26',
-            },
-            '&.Mui-focused fieldset': {
-                borderColor: '#785e26'
-            },
-        },
-    },
-})(TextField);*/
 
 const ButtonStyles = withStyles({
     root: {
@@ -162,16 +120,14 @@ class Principal extends Component {
     constructor(props) {
       super(props);
       this.state = {
-        listUsers: [],
-        mensagens: [],
+        listBooks: [],
+        pageBooks: [],
         userName: "",
         userId: "",
-        userEmail: "",
         chatOpen: false,
         classes: props.classes,
-        userChat: {},
-        chatId: "",
-        mensagem: "",
+        page: 1,
+        count: 1,
       };
     }
 
@@ -179,6 +135,7 @@ class Principal extends Component {
 
         this.setState({ userName: localStorage.getItem("userName") });
         this.setState({ userId: localStorage.getItem("userId") });
+        this.paginationManager(livros.items, livros.totalItems);
 
     }
 
@@ -186,6 +143,32 @@ class Principal extends Component {
         localStorage.setItem("@token", "");
         localStorage.setItem("user", "");
     }
+
+    handleToggle = value => () => {
+        
+    };
+    
+    handleChangePage = (event, value) => {
+		this.setState({ page: value });
+        this.setState({ listBooks: this.state.pageBooks[value - 1] });
+	};
+
+    paginationManager = (booksArray, booksLength) => {
+        this.setState({ count: Math.ceil(booksLength / 6) });
+		let array = []
+		let booksFinal = []
+		let arrayBooks = [...booksArray]
+		for (let i = 0; i < Math.ceil(booksLength / 6); i++) {
+			array = arrayBooks.splice(0, 6)
+			booksFinal.push(array)
+		}
+        this.setState({ listBooks: booksFinal[0] ? booksFinal[0] : [] });
+        this.setState({ pageBooks: booksFinal });
+	}
+
+    //sendBook = (valor) => {
+
+    //}
 
     render() {
         return ( 
@@ -206,7 +189,31 @@ class Principal extends Component {
                     </ButtonStyles>
                 </div>
                 <div className={this.state.classes.content}>
-                    principal
+                    <Paper className={this.state.classes.paper} elevation={1}>
+                        <List className={this.state.classes.list}>
+                            {this.state.listBooks.map(value => (
+                                <ListItem className={this.state.classes.listitem} key={value.id} role={undefined} dense button onClick={this.handleToggle(value)}>
+                                    <ListItemText primary={`${value.volumeInfo.title}`} />
+                                    <ListItemSecondaryAction>
+                                        <ButtonStyles 
+                                            variant="contained"
+                                            //onClick={this.sendBook(value)}
+                                            component={Link}
+					                        to={{
+							                    pathname: "/book"
+						                    }}
+                                            state={{ from: value }}
+                                        >
+                                            Ver
+                                        </ButtonStyles>
+                                    </ListItemSecondaryAction>
+                                </ListItem>
+                            ))}
+                        </List>
+                        <div className={this.state.classes.divpagination}>
+							<Pagination count={this.state.count} page={this.state.page} onChange={this.handleChangePage} />				
+						</div>
+                    </Paper>
                 </div>
             </div>
         );
