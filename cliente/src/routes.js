@@ -6,7 +6,7 @@ import Login from './pages/Login/index';
 import CadastroUsuario from './pages/CadastroUsuario/index';
 import Principal from './pages/Principal/index';
 import Book from './pages/Book/index';
-import CadastroBook from './pages/CadastroBook/index';
+import CadastroComentario from './pages/CadastroComentario/index';
 import NotFound from './pages/NotFound/index';
 
 function RequireAuth({ children, redirectTo }) {
@@ -35,9 +35,9 @@ const Rotas = () => {
       } />
 
       {/* Cadastro Supervisor routes. */}
-      <Route path="/cadastro-book" element={
+      <Route path="/cadastro-comentario" element={
         <RequireAuth redirectTo="/auth/login">
-          <CadastroBook />
+          <CadastroComentario />
         </RequireAuth>
       } />
 

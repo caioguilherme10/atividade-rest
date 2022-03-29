@@ -147,7 +147,7 @@ app.post("/registercom", checkToken, async (req, res) => {
 //list
 app.get("/comments/:id", checkToken, async (req,res) => {
     const id = req.params.id;
-    const comment = await Comments.findOne({ book: id });
+    const comment = await Comments.find({ book: id });
     console.log(comment);
     res.status(200).json({ comment: comment });
 });
