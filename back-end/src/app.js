@@ -153,7 +153,7 @@ app.get("/comments/:id", checkToken, async (req,res) => {
 });
 
 //excluir comentario
-app.delete("comment/:id", checkToken, async (req,res) => {
+app.delete("/comment/:id", checkToken, async (req,res) => {
     const id = req.params.id;
     try {
         await Comments.deleteOne({ _id: id });

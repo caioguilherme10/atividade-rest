@@ -48,6 +48,7 @@ const userServiceProxy1 = httpProxy('http://localhost:4000/register');
 const userServiceProxy2 = httpProxy('http://localhost:4000/login');
 const userServiceProxy3 = httpProxy('http://localhost:4000/registercom');
 const userServiceProxy4 = httpProxy('http://localhost:4000/comments/:id');
+const userServiceProxy5 = httpProxy('http://localhost:4000/comment/:id');
 
 /*
 async function authenticate(req) {
@@ -120,8 +121,8 @@ app.get('/comments/:id', (req, res, next) => {
 });
 
 // Proxy request
-app.delete('comment/:id', (req, res, next) => {
-    userServiceProxy4(req, res, next)
+app.delete('/comment/:id', (req, res, next) => {
+    userServiceProxy5(req, res, next)
 });
 
 /*

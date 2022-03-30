@@ -11,7 +11,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Pagination from '@material-ui/lab/Pagination';
 import colors from '../../styles/global';
 
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
+import axios from "axios";
 
 const { innerWidth: width, innerHeight: height } = window;
 
@@ -98,6 +100,47 @@ const useStyles = makeStyles({
         marginLeft: width - width * 0.99,
         marginRight: width - width * 0.99,
     },
+    listitemcom: {
+        border: "2px solid #004d40",
+        borderRadius: "5px",
+        //height: height - height * 0.90,
+        marginTop: height - height * 0.99,
+        marginBottom: height - height * 0.99,
+        padding: "5px 5px 5px 5px",
+        display: "flex",
+        flexDirection: "row",
+    },
+    divpagination: {
+        margin: "2%",
+        width: "100%",
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+    },
+    listcom: {
+        margin: "2%",
+        width: width - width * 0.10,
+    },
+    divCP: {
+        //margin: "2%",
+        width: "100%",
+    },
+    divComentarios: {
+        width: width - width * 0.05,
+        height: height - height * 0.70,
+        marginLeft: width - width * 0.99,
+        marginRight: width - width * 0.99,
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+    },
+    comentario: {
+        flex: 'none',
+        width: width - width * 0.50,
+        //height: height - height * 0.95,
+        wordWrap: 'break-word',
+        wordBreak: 'break-all',
+    },
 });
 
 const ButtonStyles = withStyles({
@@ -111,12 +154,91 @@ const ButtonStyles = withStyles({
     },
 })(Button);
 
+const ButtonStylesDelete = withStyles({
+    root: {
+        width: "200px",
+        color: "#FFF",
+        backgroundColor: colors.red,
+        '&:hover': {
+            backgroundColor: colors.red
+        },
+    },
+})(Button);
+
 const Book = (props) => {
     const classes = useStyles();
 
     let location = useLocation();
+    let navigate = useNavigate();
 
     const [book] = useState(location.state.from);
+    const [count, setCount] = useState(1);
+    const [page, setPage] = useState(1);
+	const [isError, setIsError] = useState(false);
+    const [comentarios, setComentarios] = useState([]);
+    const [pageComentarios, setPageComentarios] = useState([]);
+
+    const paginationManager = (comentariosArray) => {
+		setCount(Math.ceil(comentariosArray.length / 6))
+		let array = []
+		let comentariosFinal = []
+		let arrayComentarios = [...comentariosArray]
+		for (let i = 0; i < Math.ceil(comentariosArray.length / 6); i++) {
+			array = arrayComentarios.splice(0, 6)
+			comentariosFinal.push(array)
+		}
+		setComentarios(comentariosFinal[0] ? comentariosFinal[0] : [])
+		setPageComentarios(comentariosFinal)
+	};
+
+    const handleChangePage = (event, value) => {
+		setPage(value);
+		setComentarios(pageComentarios[value - 1]);
+	};
+
+    const deleteComentario = async (id) => {
+        console.log(id);
+        await axios.delete(`http://localhost:10000/comment/${id}`, {
+			headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS", 
+                "Content-Type": "application/json",
+                'Authorization': `Token ${localStorage.getItem('@token')}`
+            },
+		}
+		).then(response => {
+			navigate("/principal");
+		}).catch(function (error) {
+			console.log(error);
+		})
+    };
+
+    const handleToggle = (value) => {
+        console.log(value);
+    };
+
+    async function fetchData() {
+		setIsError(false);
+		await axios.get(`http://localhost:10000/comments/${book.id}`, {
+			headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS", 
+                "Content-Type": "application/json",
+                'Authorization': `Token ${localStorage.getItem('@token')}`
+            },
+		}
+		).then(response => {
+			console.log(response.data.comment);
+			paginationManager(response.data.comment)
+		}).catch(function (error) {
+			//console.log(error.response.data);
+			setIsError(true);
+		})
+	}
+
+	useEffect(() => {
+		fetchData();
+	}, []);
 
     return(
         <div className={classes.main}>
@@ -186,8 +308,36 @@ const Book = (props) => {
                             </div>
                         </div>
                     </Paper>
-                    <div>
-                        list comentarios
+                    <div className={classes.divComentarios}>
+                        {isError ? (<div>Algo deu errado contate o gerente de TI ...</div>) : (
+                            <div className={classes.divCP}>
+                                <List className={classes.listcom}>
+                                    {comentarios.map((value, key) => {
+                                        let teste = value.name===localStorage.getItem('userName');
+                                        return (
+                                            <ListItem className={classes.listitemcom} key={key} role={undefined} dense button onClick={handleToggle(value)}>
+                                                <ListItemText className={classes.comentario} primary={`${value.comment}`} />
+                                                <ListItemSecondaryAction>
+                                                    {teste ? (
+                                                        <ButtonStylesDelete
+                                                            variant="contained"
+                                                            onClick={() => deleteComentario(value._id)}
+                                                        >
+                                                            Deletar
+                                                        </ButtonStylesDelete>
+                                                    ) : (
+                                                        <div></div>
+                                                    )}
+                                                </ListItemSecondaryAction>
+                                            </ListItem>
+                                        )}
+                                    )}
+                                </List>
+                                <div className={classes.divpagination}>
+							        <Pagination count={count} page={page} onChange={handleChangePage} />				
+						        </div>
+                            </div>
+                        )}
                     </div>
                 </Paper>
             </div>
