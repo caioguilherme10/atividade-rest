@@ -69,6 +69,12 @@ const useStyles = makeStyles({
     divBook: {
         display: "flex",
         flexDirection:"row",
+        height: height - height * 0.95,
+        margin: "5px",
+    },
+    divBook2: {
+        display: "flex",
+        flexDirection:"row",
         margin: "5px",
     },
     titleBook: {
@@ -83,7 +89,8 @@ const useStyles = makeStyles({
         fontWeight: 'bold',
     },
     listTitleBook: {
-        
+        display: 'flex',
+        height: '10px',
     },
     divAutBut: {
         display: "flex",
@@ -93,7 +100,7 @@ const useStyles = makeStyles({
     },
     paperBook: {
         width: width - width * 0.05,
-        height: height - height * 0.80,
+        height: height - height * 0.75,
         backgroundColor: "#b2dfdb",
         marginTop: height - height * 0.99,
         marginBottom: height - height * 0.99,
@@ -276,13 +283,7 @@ const Book = (props) => {
                                 <div><Typography className={classes.titleBookT}>publishedDate:</Typography></div>
                                 <div><Typography className={classes.titleBook}>{book.volumeInfo.publishedDate}</Typography></div>
                             </div>
-                            <div className={classes.divBook}>
-                                <div><Typography className={classes.titleBookT}>description:</Typography></div>
-                                <div><Typography className={classes.titleBook}>{book.volumeInfo.description}</Typography></div>
-                            </div>
-                        </div>
-                        <div className={classes.divAutBut}>
-                            <div className={classes.divBook}>
+                            <div className={classes.divBook2}>
                                 <div><Typography className={classes.titleBookT}>autores:</Typography></div>
                                 <div>
                                     <List className={classes.listTitleBook}>
@@ -293,6 +294,12 @@ const Book = (props) => {
                                         ))}
                                     </List>
                                 </div>
+                            </div>
+                        </div>
+                        <div className={classes.divAutBut}>
+                            <div className={classes.divBook2}>
+                                <div><Typography className={classes.titleBookT}>description:</Typography></div>
+                                <div><Typography className={classes.titleBook}>{book.volumeInfo.description}</Typography></div>
                             </div>
                             <div>
                                 <ButtonStyles 
@@ -316,7 +323,8 @@ const Book = (props) => {
                                         let teste = value.name===localStorage.getItem('userName');
                                         return (
                                             <ListItem className={classes.listitemcom} key={key} role={undefined} dense button onClick={handleToggle(value)}>
-                                                <ListItemText className={classes.comentario} primary={`${value.comment}`} />
+                                                <ListItemText className={classes.comentario}>Nome: {value.name} - Comentario: {value.comment}</ListItemText>
+                                                {/*primary={`${value.comment}`}*/}
                                                 <ListItemSecondaryAction>
                                                     {teste ? (
                                                         <ButtonStylesDelete

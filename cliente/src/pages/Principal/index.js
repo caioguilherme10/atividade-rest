@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { Link } from "react-router-dom";
 
-//import axios from "axios";
+import axios from "axios";
 
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -13,6 +13,9 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Pagination from '@material-ui/lab/Pagination';
+import IconButton from '@material-ui/core/IconButton';
+import InputBase from '@material-ui/core/InputBase';
+import SearchIcon from '@material-ui/icons/Search';
 //import TextField from '@material-ui/core/TextField';
 import colors from '../../styles/global';
 
@@ -59,12 +62,12 @@ const styles = {
         //marginBottom: height - height * 0.88,
         marginLeft: width - width * 0.99,
         marginRight: width - width * 0.99,
-        height: height - height * 0.30,
+        height: height - height * 0.15,
         width: width,
         backgroundColor: "#b2dfdb",
         display: "flex",
         flexDirection:"column",
-        justifyContent: "center",
+        //justifyContent: "center",
         alignItems: "center",
     },
     list: {
@@ -103,6 +106,32 @@ const styles = {
         flexDirection:"row",
         alignItems: "center",
     },
+    divBusca: {
+        height: height - height * 0.80,
+        width: width - width * 0.10,
+        //display: "flex",
+        alignItems: "center",
+        marginTop: height - height * 0.95,
+        //marginBottom: height - height * 0.95,
+        marginLeft: height - height * 0.95,
+        marginRight: height - height * 0.95,
+    },
+    paperBusca: {
+        //padding: '2px 4px',
+        display: 'flex',
+        flexDirection:"row",
+        justifyContent: "space-between",
+        alignItems: 'center',
+        width: "100%",
+    },
+    inputBusca: {
+        width: width - width * 0.40,
+        marginLeft: height - height * 0.95,
+    },
+    iconButton: {
+        padding: 10,
+        marginRight: height - height * 0.95,
+    },
 };
 
 const ButtonStyles = withStyles({
@@ -128,6 +157,8 @@ class Principal extends Component {
         classes: props.classes,
         page: 1,
         count: 1,
+        busca: "",
+        isError: true,
       };
     }
 
@@ -169,6 +200,48 @@ class Principal extends Component {
     //sendBook = (valor) => {
 
     //}
+    /*
+    sendToken = () => {
+        axios
+            .get(`http://localhost:10000/auth`, {
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS"
+                },
+            })
+            .then((response) => {
+                console.log(response.data);
+            })
+            .catch((error) => {
+                console.log(error.response.data)
+        });
+    }
+    */
+    handleChangeBusca = (event) => {
+        this.setState({ busca: event.target.value });
+	};
+
+    handleClickBusca = () => {
+		//let filteredCitys = city.filter(object => object.name.toLowerCase().includes(busca.toLowerCase()))
+		//setPage(1)
+		//paginationManager(filteredCitys)
+        //buscar no back end
+        axios
+            .get(`http://localhost:10000/books?q=${this.state.busca}`, {
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS"
+                },
+            })
+            .then((response) => {
+                console.log(response.data);
+                this.paginationManager(response.data.msg.items, response.data.msg.totalItems);
+                this.setState({ isError: false });
+            })
+            .catch((error) => {
+                console.log(error.response.data)
+        });
+	}
 
     render() {
         return ( 
@@ -190,29 +263,52 @@ class Principal extends Component {
                 </div>
                 <div className={this.state.classes.content}>
                     <Paper className={this.state.classes.paper} elevation={1}>
-                        <List className={this.state.classes.list}>
-                            {this.state.listBooks.map(value => (
-                                <ListItem className={this.state.classes.listitem} key={value.id} role={undefined} dense button onClick={this.handleToggle(value)}>
-                                    <ListItemText primary={`${value.volumeInfo.title}`} />
-                                    <ListItemSecondaryAction>
-                                        <ButtonStyles 
-                                            variant="contained"
-                                            //onClick={this.sendBook(value)}
-                                            component={Link}
-					                        to={{
-							                    pathname: "/book"
-						                    }}
-                                            state={{ from: value }}
-                                        >
-                                            Ver
-                                        </ButtonStyles>
-                                    </ListItemSecondaryAction>
-                                </ListItem>
-                            ))}
-                        </List>
-                        <div className={this.state.classes.divpagination}>
-							<Pagination count={this.state.count} page={this.state.page} onChange={this.handleChangePage} />				
-						</div>
+                        <div className={this.state.classes.divBusca}>
+                            <Paper className={this.state.classes.paperBusca}>
+								<InputBase
+									className={this.state.classes.inputBusca}
+									placeholder="Buscar Livro"
+									value={this.state.busca}
+									onChange={this.handleChangeBusca}
+								/>
+								<IconButton className={this.state.classes.iconButton} aria-label="search" onClick={this.handleClickBusca}>
+									<SearchIcon />
+								</IconButton>
+							</Paper>
+                            {/*<ButtonStyles 
+                                variant="contained"
+                                onClick={this.sendToken()}
+                            >
+                                Permissão
+                            </ButtonStyles>*/}
+                        </div>
+                        {this.state.isError ? (<div></div>) : (
+                            <div className={this.state.classes.divCP}>
+                                <List className={this.state.classes.list}>
+                                    {this.state.listBooks.map(value => (
+                                        <ListItem className={this.state.classes.listitem} key={value.id} role={undefined} dense button onClick={this.handleToggle(value)}>
+                                            <ListItemText primary={`${value.volumeInfo.title}`} />
+                                            <ListItemSecondaryAction>
+                                                <ButtonStyles 
+                                                    variant="contained"
+                                                    //onClick={this.sendBook(value)}
+                                                    component={Link}
+					                                to={{
+							                            pathname: "/book"
+						                            }}
+                                                    state={{ from: value }}
+                                                >
+                                                    Ver
+                                                </ButtonStyles>
+                                            </ListItemSecondaryAction>
+                                        </ListItem>
+                                    ))}
+                                </List>
+                                <div className={this.state.classes.divpagination}>
+							        <Pagination count={this.state.count} page={this.state.page} onChange={this.handleChangePage} />				
+						        </div>
+                            </div>
+                        )}
                     </Paper>
                 </div>
             </div>

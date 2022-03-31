@@ -1,8 +1,9 @@
 'use strict';
 
-//const fs = require('fs');
-//const path = require('path');
+const fs = require('fs');
+const path = require('path');
 //const url = require('url');
+const open = require('open');
 const httpProxy = require('express-http-proxy');
 const express = require('express');
 const cors = require('cors');
@@ -11,22 +12,27 @@ const app = express();
 //var bodyParser = require('body-parser');
 var logger = require('morgan');
 
-//const {google} = require('googleapis');
-/*
+const {google} = require('googleapis');
 const keyPath = path.join(__dirname, 'oauth2.keys.json');
 let keys = {redirect_uris: ['']};
 if (fs.existsSync(keyPath)) {
   keys = require(keyPath).web;
 }
-*/
-/*
 const oauth2Client = new google.auth.OAuth2(
     keys.client_id,
     keys.client_secret,
     keys.redirect_uris[0]
 );
-*/
-//google.options({auth: oauth2Client});
+google.options({auth: oauth2Client});
+const scopes = [
+    'https://www.googleapis.com/auth/books',
+];
+const authorizeUrl = oauth2Client.generateAuthUrl({
+    // 'online' (default) or 'offline' (gets refresh_token)
+    access_type: 'offline',
+    // If you only need one scope you can pass it as a string
+    scope: scopes
+});
  
 app.use(logger('dev'));
 app.use(cors({
@@ -91,6 +97,33 @@ app.post('/oauth2callback', async (req,res) => {
     //    return res.status(500).json({ msg: err });
     //}
 });
+*/
+
+//app.get("/auth", (req, res) => {
+//    open(authorizeUrl, {wait: false});
+//});
+
+app.get("/oauth2callback", async (req, res) => {
+    //const qs = new url.URL(req.url, 'http://localhost:10000').searchParams;
+    //const {tokens} = await oauth2Client.getToken(qs.get('code'));
+    //oauth2Client.credentials = tokens;
+    console.log(req.url.toString());
+    console.log("oi");
+    console.log(req.url.toString().slice(21,94));
+    const myArray = req.url.toString().split("=");
+    const myArray2 = myArray[1].split("&");
+    console.log("oi");
+    console.log(myArray2[0]);
+    //const code = req.url.toString().slice(21);
+    const code = myArray2[0];
+    console.log(code);
+    try {
+        const {tokens} = await oauth2Client.getToken(code)
+        oauth2Client.setCredentials(tokens);
+    } catch (err) {
+        return res.status(500).json({ msg: err });
+    }
+});
 
 /* Proxy request
 router.post('/register', (req, res) => {
@@ -125,7 +158,7 @@ app.delete('/comment/:id', (req, res, next) => {
     userServiceProxy5(req, res, next)
 });
 
-/*
+
 //api google books
 app.get('/books', (req,res) => {
     const params = req.url.toString().slice(9);
@@ -144,6 +177,7 @@ app.get('/books', (req,res) => {
     })
 });
 
+/*
 //api google books
 app.get('/book', (req,res) => {
     const params = req.url.toString().slice(9);
@@ -194,7 +228,19 @@ app.use((req, res, next) => {
     httpProxy(selectProxyHost(req,res))(req, res, next);
 });
 */
+
+oauth2Client.on('tokens', (tokens) => {
+    if (tokens.refresh_token) {
+      // store the refresh_token in my database!
+        oauth2Client.setCredentials({
+            refresh_token: tokens.refresh_token
+        });
+        console.log(tokens.refresh_token);
+    }
+    console.log(tokens.access_token);
+});
  
 app.listen(10000, () => {
     console.log('API Gateway running!');
+    open(authorizeUrl, {wait: false});
 });
